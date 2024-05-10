@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+    php-testcase:
+        build: .docker/services/php
+        depends_on:
+            - mariadb-testcase
+        volumes:
+            - ./:/var/www/html/testcase
+        working_dir: /var/www/html/testcase/app
+        entrypoint: ['../.docker/services/php/scripts/entrypoint.sh']
+        command: ['php-fpm']
+
+    mariadb-testcase:
+        build: .docker/services/mariadb
+        ports:
+            - '25306:3306'
+        env_file:
+            - app/.env
+        environment:
+            MYSQL_RANDOM_ROOT_PASSWORD: 'true'
+        volumes:
+            - volume-mariadb-testcase:/var/lib/mysql
+volumes:
+    volume-mariadb-testcase:
