@@ -37,6 +37,7 @@ class TestCaseCommand extends Command
         // Remove all entries with odd IDs
         foreach ($this->pageRepository->findAll() as $page) {
             if ($page->getId() % 2) {
+                $page->getBook()->removePage($page);
                 $this->entityManager->remove($page);
             }
         }
