@@ -34,6 +34,12 @@ class TestCaseCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        foreach ($this->bookRepository->findAll() as $book) {
+            foreach ($book->getPages() as $page) {
+                // dummy loop just to initialize all Book::$pages collections
+            }
+        }
+
         // Remove all entries with odd IDs
         foreach ($this->pageRepository->findAll() as $page) {
             if ($page->getId() % 2) {
