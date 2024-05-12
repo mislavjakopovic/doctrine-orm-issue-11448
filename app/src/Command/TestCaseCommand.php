@@ -13,6 +13,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use function array_map;
 
 #[AsCommand('app:test:case')]
 class TestCaseCommand extends Command
@@ -47,7 +48,8 @@ class TestCaseCommand extends Command
          * - or a persist(newPage), not book
          * - or remove persist(book)
          */
-        foreach ($this->bookRepository->findAll() as $book) {
+        $books = $this->bookRepository->findAll();
+        foreach ($books as $book) {
             $book->setName('Book from Command');
 
             // The loop here is not required since the same bug would occur with just ONE new entity,
@@ -61,6 +63,19 @@ class TestCaseCommand extends Command
         }
 
         $this->entityManager->flush();
+
+        foreach ($books as $book) {
+            $this->io->writeln("Book {$book->getId()} pages:");
+            $this->io->table(
+                ['ID', 'Title'],
+                array_map(function($page) {
+                    return [
+                        'id' => $page->getId(),
+                        'title' => $page->getTitle()
+                    ];
+                }, $book->getPages())
+            );
+        }
 
         // Retrieve and output the results
         $pages = $this->pageRepository->findAll();
